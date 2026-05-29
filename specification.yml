@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: ITER open data
+  description: Documentation relative to the open part of ITER's digital product passport APIs.
+  version: 0.0.1
+
+servers:
+  - url: http://api.example.com/v1
+    description: Current production server for ITER open dpp api
+
+paths:
+  /passports:
+    get:
+      summary: Returns a list of digital product passports.
+      description: Optional extended description in CommonMark or HTML.
+      parameters:
+        - in: query
+          name: sort
+          required: false
+          schema: { type: string, default: 'ID' }
+      responses:
+        '200': # status code
+          description: Liste de passports paginée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Passport'
+
+components:
+  schemas:
+    Passport:
+      type: 'object'
+      properties:
+        PropertyName1:
+          type: 'string'
+        PropertyName2:
+          type: 'integer'
