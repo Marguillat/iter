@@ -35,6 +35,8 @@ services:
       POSTGRES_PASSWORD: psswd-iter-open
       POSTGRES_DB: db-iter-open
       DB_ENV: dev
+    networks:
+      - internal_network
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
       - open_dpp_pg:/var/lib/postgresql

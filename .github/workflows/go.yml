@@ -102,7 +102,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/projects/portfolio
+            echo "pulling images ..."
             docker compose pull
+            echo "downing containers ..."
             docker compose down
+            echo "composing images ..."
             docker compose up -d --remove-orphans
+            echo "deleting unused content"
             docker system prune -a -f

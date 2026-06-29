@@ -2,9 +2,6 @@ services:
   swagger-ui:
     image: docker.swagger.io/swaggerapi/swagger-ui:latest
     container_name: iter_swagger_ui
-    # depends_on:
-    #   open-dpp-api:
-    #     condition: service_healthy
     environment:
       SWAGGER_JSON: /swagger-ui/specification.yml
     networks:
@@ -18,11 +15,29 @@ services:
     networks:
       - internal_network
       - public_network
-    # healthcheck:
-    #   test: ['CMD-SHELL', 'curl']
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 3
+    depends_on:
+      open-dpp-db:
+        condition: service_healthy
+
+  open-dpp-db:
+    image: postgres:18
+    restart: unless-stopped
+    container_name: open_dpp_db
+    environment:
+      POSTGRES_USER: user-iter-open
+      POSTGRES_PASSWORD: psswd-iter-open
+      POSTGRES_DB: db-iter-open
+      DB_ENV: dev
+    networks:
+      - internal_network
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - open_dpp_pg:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user-iter-open -d db-iter-open']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 # Compose networks
 networks:
@@ -30,3 +45,6 @@ networks:
     driver: bridge
   public_network:
     external: true
+
+volumes:
+  open_dpp_pg:
