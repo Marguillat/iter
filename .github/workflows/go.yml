@@ -101,7 +101,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/projects/portfolio
+            cd /home/ubuntu/apps/iter
             echo "pulling images ..."
             docker compose pull
             echo "downing containers ..."
