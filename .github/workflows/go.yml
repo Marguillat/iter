@@ -93,6 +93,9 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [build-and-push]
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.2.5
