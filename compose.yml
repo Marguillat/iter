@@ -44,6 +44,12 @@ services:
       timeout: 5s
       retries: 5
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 82:8080
+
 # Compose networks
 networks:
   internal_network:
