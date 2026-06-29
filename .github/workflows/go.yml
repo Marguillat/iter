@@ -99,17 +99,31 @@ jobs:
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.2.5
+        env:
+          CR_USER: ${{ github.actor }}
+          CR_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: CR_USER,CR_PAT
           script: |
             cd /home/ubuntu/apps/iter
+
+            # 1. Log into GHCR on the VPS server using the passed variables
+            echo "$CR_PAT" | docker login ghcr.io -u "$CR_USER" --password-stdin
+
             echo "pulling images ..."
             docker compose pull
+
             echo "downing containers ..."
             docker compose down
+
             echo "composing images ..."
             docker compose up -d --remove-orphans
+
+            # 2. Optional: Logout after you are done to protect the temporary token
+            docker logout ghcr.io
+
             echo "deleting unused content"
             docker system prune -a -f
