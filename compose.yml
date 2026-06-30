@@ -17,6 +17,9 @@ services:
   open-dpp-api:
     build: ./open-api
     container_name: open_dpp_api
+    environment:
+      ITER_DATABASE_URL: postgresql://user-iter-open:psswd-iter-open@open_dpp_db:5432/db-iter-open
+
     ports:
       - 80:7000
     networks:
