@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"iter-api/database"
-
 	"github.com/gofiber/contrib/v3/monitor"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/healthcheck"
@@ -13,7 +11,6 @@ import (
 )
 
 func main() {
-	database.ConnectToDB()
 	// Initialize default config
 
 	app := fiber.New()
