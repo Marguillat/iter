@@ -54,6 +54,8 @@ services:
     restart: always
     ports:
       - 82:8080
+    networks:
+      - internal_network
 
 # Compose networks
 networks:
