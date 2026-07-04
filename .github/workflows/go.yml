@@ -84,10 +84,19 @@ jobs:
         with:
           context: ./open-api
           push: true
-          platforms: linux/amd64 # ,linux/arm64 : build sur plusieurs plateformes prend un temps fou en GH-actions
+          platforms: linux/amd64 # ,linux/arm64 : build sur plusieurs plateformes prend un temps fou en GH-actions (+9 minutes)
           tags: ${{ env.registry }}/${{ env.IMAGE_REPOSITORY }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.registry }}/${{ env.IMAGE_REPOSITORY }}:latest
+          format: table
+          exit-code: '1' # fait échouer le job si vulnérabilité trouvée
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true # ignore les failles sans correctif dispo
 
   deploy:
     name: Deploy to Production
