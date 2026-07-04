@@ -12,6 +12,7 @@ import (
 
 func main() {
 	// Initialize default config
+
 	app := fiber.New()
 	app.Use(logger.New())
 
