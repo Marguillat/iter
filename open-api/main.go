@@ -19,13 +19,20 @@ func main() {
 	// Route de vérification de la santé et metrics
 	app.Get("/health", healthcheck.New())
 	app.Get("/metrics", monitor.New(monitor.Config{APIOnly: true}))
+
 	// Route de base de l'API
+	defaultMessage := fiber.Map{
+		"status":   "ok",
+		"messages": "Welcome to the open ITER dpp API. All routes start at the /api path. For more information see the swagger specification.",
+		"version":  "1.0.0",
+	}
+
 	app.Get("/api", func(c fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"status":  "ok",
-			"message": "Welcome to the open ITER dpp API",
-			"version": "1.0.0",
-		})
+		return c.JSON(defaultMessage)
+	})
+
+	app.Get("/", func(c fiber.Ctx) error {
+		return c.JSON(defaultMessage)
 	})
 
 	// Démarrer le serveur sur le port 7000
