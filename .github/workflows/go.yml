@@ -8,6 +8,8 @@ on:
     branches: ['main']
   pull_request:
     branches: ['main']
+    types:
+      - closed
 env:
   registry: ghcr.io
   image_name: ${{ github.repository }}
@@ -37,7 +39,7 @@ jobs:
           go-version: '1.26'
 
       - name: Test open api
-        run: cd ./open-api && go test -v
+        run: cd ./open-api && go test ./... -v
 
   quality:
     name: Analyze api code with SonarQube

@@ -285,3 +285,384 @@ CREATE TRIGGER trg_passports_updated_at
     BEFORE UPDATE ON passports
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
+
+-- ============================================================================
+-- Digital Product Passport (DPP) - Seed Data
+-- Patagonia Better Sweater Jacket Example
+-- ============================================================================
+
+SET search_path TO dpp;
+
+-- Begin transaction for atomicity
+BEGIN;
+
+-- ============================================================================
+-- 1. Insert Passport Record
+-- ============================================================================
+INSERT INTO passports (
+    id,
+    passport_uri,
+    passport_type,
+    schema_context,
+    access_public,
+    access_professional,
+    access_authority,
+    created_at,
+    updated_at
+) VALUES (
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'https://verisav.fr/data/dpp-examples/patagonia-jacket#passport',
+    'digital_product_passport',
+    'EU DPP-inspired textile passport',
+    true,
+    true,
+    false,
+    now(),
+    now()
+);
+
+-- ============================================================================
+-- 2. Insert Product
+-- ============================================================================
+INSERT INTO products (
+    id,
+    passport_id,
+    name,
+    titles,
+    descriptions,
+    brand,
+    sku,
+    gtin,
+    digital_link,
+    granularity_level,
+    serial_number,
+    color,
+    size
+) VALUES (
+    '550e8400-e29b-41d4-a716-446655440000'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'Patagonia Better Sweater Jacket',
+    '{"en": "Patagonia Better Sweater Jacket - Digital Product Passport", "fr": "Veste Patagonia Better Sweater - Passeport Produit Numérique"}'::JSONB,
+    '{"en": "Patagonia Better Sweater fleece jacket made from recycled polyester", "fr": "Veste en polaire Patagonia Better Sweater en polyester recyclé"}'::JSONB,
+    'Patagonia',
+    '25515-MEN-M',
+    '884993074531',
+    'https://www.patagonia.com/01/884993074531/21/PAT-2025-BSW-1234',
+    'serial',
+    'PAT-2025-BSW-1234',
+    'Black',
+    'M'
+);
+
+-- ============================================================================
+-- 3. Insert Product Carrier
+-- ============================================================================
+INSERT INTO product_carriers (
+    id,
+    product_id,
+    carrier_type,
+    resolved_url
+) VALUES (
+    '6ba7b810-9dad-11d1-80b4-00c04fd430c8'::UUID,
+    '550e8400-e29b-41d4-a716-446655440000'::UUID,
+    'uri/qr',
+    'https://www.patagonia.com/01/884993074531/21/PAT-2025-BSW-1234'
+);
+
+-- ============================================================================
+-- 4. Insert Economic Operators (Manufacturer & Retailer)
+-- ============================================================================
+-- Manufacturer
+INSERT INTO economic_operators (
+    id,
+    name,
+    role,
+    url,
+    gln,
+    locality,
+    region,
+    country
+) VALUES (
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'Patagonia, Inc.',
+    'manufacturer'::operator_role_enum,
+    'https://www.patagonia.com',
+    '8849930745310',
+    'Ventura',
+    'California',
+    'US'
+);
+
+-- Retailer
+INSERT INTO economic_operators (
+    id,
+    name,
+    role,
+    url,
+    gln,
+    locality,
+    region,
+    country
+) VALUES (
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'::UUID,
+    'Patagonia Store Paris',
+    'retailer'::operator_role_enum,
+    'https://www.patagonia.com/stores/paris',
+    '3012345678902',
+    'Paris',
+    'Île-de-France',
+    'FR'
+);
+
+-- ============================================================================
+-- 5. Insert Manufacturing Record
+-- ============================================================================
+INSERT INTO manufacturing_records (
+    id,
+    passport_id,
+    manufacturing_date,
+    location,
+    manufacturer_id
+) VALUES (
+    'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    '2025-08-20'::DATE,
+    'Ventura, California, USA',
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID
+);
+
+-- ============================================================================
+-- 6. Insert Commercial Transaction & Warranty
+-- ============================================================================
+-- Commercial Transaction
+INSERT INTO commercial_transactions (
+    id,
+    passport_id,
+    retailer_id,
+    purchase_date,
+    purchase_amount
+) VALUES (
+    'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'::UUID,
+    '2025-10-12'::DATE,
+    '129.00'::MONEY
+);
+
+-- Warranty
+INSERT INTO warranties (
+    id,
+    transaction_id,
+    warranty_type,
+    status,
+    validity_period,
+    duration_months
+) VALUES (
+    'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'manufacturer',
+    'active'::warranty_status_enum,
+    '[2025-10-12, 2026-10-12)'::DATERANGE,
+    12
+);
+
+-- ============================================================================
+-- 7. Insert Material Composition
+-- ============================================================================
+INSERT INTO material_compositions (
+    id,
+    passport_id,
+    part,
+    material,
+    share_percent,
+    role
+) VALUES (
+    'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'outer',
+    'recycled polyester',
+    100.00,
+    'fleece shell'
+);
+
+-- ============================================================================
+-- 8. Insert Material Claims
+-- ============================================================================
+INSERT INTO material_claims (
+    id,
+    passport_id,
+    claim_text
+) VALUES (
+    'f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    '100% recycled polyester'
+);
+
+-- ============================================================================
+-- 9. Insert Substances of Concern
+-- ============================================================================
+-- No substances of concern for this product
+
+-- ============================================================================
+-- 10. Insert Recycled Content
+-- ============================================================================
+INSERT INTO recycled_content (
+    id,
+    passport_id,
+    total_share_percent,
+    method
+) VALUES (
+    '10eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    100.00,
+    'recycled polyester feedstock'
+);
+
+-- ============================================================================
+-- 11. Insert Performance Record
+-- ============================================================================
+INSERT INTO performance_records (
+    id,
+    passport_id,
+    intended_use,
+    repairability_status,
+    repairability_notes
+) VALUES (
+    '11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'Everyday outerwear / fleece jacket',
+    'serviceable',
+    'Repairs may be supported through brand repair and resale channels'
+);
+
+-- ============================================================================
+-- 12. Insert Care Instructions
+-- ============================================================================
+INSERT INTO care_instructions (
+    id,
+    passport_id,
+    instruction,
+    sort_order
+) VALUES
+    ('12eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'wash cold', 1),
+    ('12eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'do not bleach', 2),
+    ('12eebc99-9c0b-4ef8-bb6d-6bb9bd380a13'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'tumble dry low', 3),
+    ('12eebc99-9c0b-4ef8-bb6d-6bb9bd380a14'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'do not iron', 4);
+
+-- ============================================================================
+-- 13. Insert Care Documents
+-- ============================================================================
+INSERT INTO care_documents (
+    id,
+    passport_id,
+    names,
+    descriptions,
+    url
+) VALUES (
+    '13eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    '{"en": "Care Instructions", "fr": "Instructions d''entretien"}'::JSONB,
+    '{"en": "Washing and care instructions for the Better Sweater jacket", "fr": "Instructions de lavage et d''entretien pour la veste Better Sweater"}'::JSONB,
+    'https://www.patagonia.com/care-instructions/better-sweater'
+);
+
+-- ============================================================================
+-- 14. Insert Public Documents
+-- ============================================================================
+INSERT INTO public_documents (
+    id,
+    passport_id,
+    doc_type,
+    url
+) VALUES
+    ('14eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'care', 'https://www.patagonia.com/care-instructions/better-sweater'),
+    ('14eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'recycling', 'https://www.patagonia.com/worn-wear/');
+
+-- ============================================================================
+-- 15. Insert Sustainability Info
+-- ============================================================================
+INSERT INTO sustainability_info (
+    id,
+    passport_id,
+    recycling_instructions,
+    recycling_url,
+    take_back_available,
+    take_back_program,
+    end_of_life_preferred_route,
+    end_of_life_secondary_route
+) VALUES (
+    '15eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    '{"en": "Product made from 100% recycled polyester. Can be recycled through Patagonia Worn Wear program or textile recycling facilities.", "fr": "Produit fabriqué à partir de 100% polyester recyclé. Peut être recyclé via le programme Patagonia Worn Wear ou les installations de recyclage textile."}'::JSONB,
+    'https://www.patagonia.com/worn-wear/',
+    true,
+    'Patagonia Worn Wear',
+    'reuse or take-back',
+    'textile recycling'
+);
+
+-- ============================================================================
+-- 16. Insert Lifecycle Status History
+-- ============================================================================
+INSERT INTO lifecycle_status_history (
+    id,
+    passport_id,
+    status,
+    status_date
+) VALUES
+    ('16eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'manufactured', '2025-08-20'::DATE),
+    ('16eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'sold', '2025-10-12'::DATE),
+    ('16eebc99-9c0b-4ef8-bb6d-6bb9bd380a13'::UUID, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID, 'under_warranty', '2025-10-12'::DATE);
+
+-- ============================================================================
+-- 17. Insert Lifecycle Current State
+-- ============================================================================
+INSERT INTO lifecycle_current_state (
+    id,
+    passport_id,
+    stage_name,
+    stage_date,
+    product_status,
+    status_date
+) VALUES (
+    '17eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'usage',
+    '2025-10-12'::DATE,
+    'sous_garantie',
+    '2025-10-12'::DATE
+);
+
+-- ============================================================================
+-- 18. Insert Consumer (GDPR)
+-- ============================================================================
+INSERT INTO consumers (
+    id,
+    passport_id,
+    full_name,
+    email
+) VALUES (
+    '18eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    'Sophie Leroy',
+    'sophie.leroy@example.com'
+);
+
+-- ============================================================================
+-- 19. Insert Passport Links (API Endpoints)
+-- ============================================================================
+INSERT INTO passport_links (
+    id,
+    passport_id,
+    endpoints
+) VALUES (
+    '19eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+    'f47ac10b-58cc-4372-a567-0e02b2c3d479'::UUID,
+    '{"self": "/api/dpp/patagonia-jacket", "jsonld": "/api/dpp/patagonia-jacket?format=jsonld", "ttl": "/api/dpp/patagonia-jacket?format=ttl", "public": "/api/dpp/patagonia-jacket?scope=public", "oauth": "https://api.verisav.fr/oauth/token"}'::JSONB
+);
+
+-- ============================================================================
+-- Verify Data Integrity
+-- ============================================================================
+-- Commit transaction
+COMMIT;
