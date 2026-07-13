@@ -28,21 +28,30 @@ func main() {
 		"version":  "1.0.0",
 	}
 
-	app.Get("/api", func(c fiber.Ctx) error {
-		DB, err := database.ConnectToDB()
-		if err != nil {
-			return fmt.Errorf("fuck")
-		}
-		getPassportResponse, err := database.GetPassportByGTIN(DB.CurrentConn)
-		if err != nil {
-			return fmt.Errorf("fuck2: %e", err)
-		}
-
-		return c.JSON(getPassportResponse)
-	})
-
 	app.Get("/", func(c fiber.Ctx) error {
 		return c.JSON(defaultMessage)
+	})
+
+	app.Get("/api", func(c fiber.Ctx) error {
+		return c.JSON(defaultMessage)
+	})
+
+	app.Get("/api/dpp/:gtin?", func(c fiber.Ctx) error {
+
+		switch {
+		case c.Params("gtin") != "":
+			DB, err := database.ConnectToDB()
+			if err != nil {
+				return fmt.Errorf("Error while connecting to db: %e", err)
+			}
+			getPassportResponse, err := database.GetPassportByGTIN(DB.CurrentConn, c.Params("gtin"))
+			if err != nil {
+				return fmt.Errorf("Error while requesting passport: %e", err)
+			}
+			return c.JSON(getPassportResponse)
+		default:
+			return c.JSON(defaultMessage)
+		}
 	})
 
 	// Démarrer le serveur sur le port 7000

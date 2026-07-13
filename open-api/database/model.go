@@ -67,12 +67,11 @@ func ConnectToDB() (*DBConnection, error) {
 
 // defer conn.Close(context.Background())
 
-func GetPassportByGTIN(conn *pgx.Conn) ([]Product, error) {
-	// [TODO] voir https://stackoverflow.com/questions/61704842/how-to-scan-a-queryrow-into-a-struct-with-pgx
-	rows, err := conn.Query(context.Background(),
-		`
-		SELECT * FROM dpp.products WHERE gtin = '884993074531'
-		`,
+func GetPassportByGTIN(conn *pgx.Conn, gtin string) ([]Product, error) {
+	formatedQuery := fmt.Sprintf(`SELECT * FROM dpp.products WHERE gtin = '%s'`, gtin)
+	rows, err := conn.Query(
+		context.Background(),
+		formatedQuery,
 	)
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByName[Product])
 	if err != nil {
