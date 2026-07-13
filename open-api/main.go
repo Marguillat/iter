@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"iter-api/database"
 	"log"
 
 	"github.com/gofiber/contrib/v3/monitor"
@@ -28,7 +29,16 @@ func main() {
 	}
 
 	app.Get("/api", func(c fiber.Ctx) error {
-		return c.JSON(defaultMessage)
+		DB, err := database.ConnectToDB()
+		if err != nil {
+			return fmt.Errorf("fuck")
+		}
+		getPassportResponse, err := database.GetPassportByGTIN(DB.CurrentConn)
+		if err != nil {
+			return fmt.Errorf("fuck2: %e", err)
+		}
+
+		return c.JSON(getPassportResponse)
 	})
 
 	app.Get("/", func(c fiber.Ctx) error {

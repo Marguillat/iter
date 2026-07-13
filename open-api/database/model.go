@@ -13,10 +13,32 @@ var lock = &sync.Mutex{}
 
 type DBConnection struct {
 	connectionString string
-	currentConn      *pgx.Conn
+	CurrentConn      *pgx.Conn
 }
 
 var DB *DBConnection = nil
+
+type Product struct {
+	Id          string
+	Passport_id string
+	Name        string
+	Titles      struct {
+		EN string `json:"en"`
+		FR string `json:"fr"`
+	}
+	Descriptions struct {
+		EN string `json:"en"`
+		FR string `json:"fr"`
+	}
+	Brand             string
+	Sku               string
+	Gtin              string
+	Digital_link      string
+	Granularity_level string
+	Serial_number     string
+	Color             string
+	Size              string
+}
 
 func ConnectToDB() (*DBConnection, error) {
 	if DB == nil {
@@ -36,7 +58,7 @@ func ConnectToDB() (*DBConnection, error) {
 			// 2. Only populate the global singleton if connection succeeds
 			DB = &DBConnection{
 				connectionString: connectionString,
-				currentConn:      conn,
+				CurrentConn:      conn,
 			}
 		}
 	}
@@ -45,9 +67,16 @@ func ConnectToDB() (*DBConnection, error) {
 
 // defer conn.Close(context.Background())
 
-// var greeting string
-// err = conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
-// if err != nil {
-// 	fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-// 	os.Exit(1)
-// }
+func GetPassportByGTIN(conn *pgx.Conn) ([]Product, error) {
+	// [TODO] voir https://stackoverflow.com/questions/61704842/how-to-scan-a-queryrow-into-a-struct-with-pgx
+	rows, err := conn.Query(context.Background(),
+		`
+		SELECT * FROM dpp.products WHERE gtin = '884993074531'
+		`,
+	)
+	products, err := pgx.CollectRows(rows, pgx.RowToStructByName[Product])
+	if err != nil {
+		return nil, fmt.Errorf("QueryRow failed: %v\n", err)
+	}
+	return products, nil
+}
