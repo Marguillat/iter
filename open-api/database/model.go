@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"iter-api/utils"
 	"os"
 	"sync"
 
@@ -13,10 +14,32 @@ var lock = &sync.Mutex{}
 
 type DBConnection struct {
 	connectionString string
-	currentConn      *pgx.Conn
+	CurrentConn      *pgx.Conn
 }
 
 var DB *DBConnection = nil
+
+type Product struct {
+	Id          string
+	Passport_id string
+	Name        string
+	Titles      struct {
+		EN string `json:"en"`
+		FR string `json:"fr"`
+	}
+	Descriptions struct {
+		EN string `json:"en"`
+		FR string `json:"fr"`
+	}
+	Brand             string
+	Sku               string
+	Gtin              string
+	Digital_link      string
+	Granularity_level string
+	Serial_number     string
+	Color             string
+	Size              string
+}
 
 func ConnectToDB() (*DBConnection, error) {
 	if DB == nil {
@@ -36,7 +59,7 @@ func ConnectToDB() (*DBConnection, error) {
 			// 2. Only populate the global singleton if connection succeeds
 			DB = &DBConnection{
 				connectionString: connectionString,
-				currentConn:      conn,
+				CurrentConn:      conn,
 			}
 		}
 	}
@@ -45,9 +68,23 @@ func ConnectToDB() (*DBConnection, error) {
 
 // defer conn.Close(context.Background())
 
-// var greeting string
-// err = conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
-// if err != nil {
-// 	fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-// 	os.Exit(1)
-// }
+func GetPassportByGTIN(conn *pgx.Conn, gtin string) ([]Product, error) {
+	passed, err := utils.CheckIsGTIN(&gtin)
+	if err != nil {
+		return nil, fmt.Errorf("Check GTIN format error: %v\n", err)
+	}
+	if !passed {
+		return nil, fmt.Errorf("GTIN is not in the correct format")
+	}
+
+	formatedQuery := fmt.Sprintf(`SELECT * FROM dpp.products WHERE gtin = '%s'`, gtin)
+	rows, err := conn.Query(
+		context.Background(),
+		formatedQuery,
+	)
+	products, err := pgx.CollectRows(rows, pgx.RowToStructByName[Product])
+	if err != nil {
+		return nil, fmt.Errorf("QueryRow failed: %v\n", err)
+	}
+	return products, nil
+}
