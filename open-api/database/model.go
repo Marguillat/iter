@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"iter-api/utils"
 	"os"
 	"sync"
 
@@ -68,6 +69,14 @@ func ConnectToDB() (*DBConnection, error) {
 // defer conn.Close(context.Background())
 
 func GetPassportByGTIN(conn *pgx.Conn, gtin string) ([]Product, error) {
+	passed, err := utils.CheckIsGTIN(&gtin)
+	if err != nil {
+		return nil, fmt.Errorf("Check GTIN format error: %v\n", err)
+	}
+	if !passed {
+		return nil, fmt.Errorf("GTIN is not in the correct format")
+	}
+
 	formatedQuery := fmt.Sprintf(`SELECT * FROM dpp.products WHERE gtin = '%s'`, gtin)
 	rows, err := conn.Query(
 		context.Background(),
