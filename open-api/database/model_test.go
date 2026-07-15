@@ -27,7 +27,7 @@ func TestConnectToDB_Singleton(t *testing.T) {
 	var wg sync.WaitGroup
 	instances := make([]*DBConnection, 10)
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
@@ -41,8 +41,8 @@ func TestConnectToDB_Singleton(t *testing.T) {
 
 	// Verify all goroutines received the exact same memory address
 	firstInstance := instances[0]
-	for i := 1; i < len(instances); i++ {
-		if instances[i] != firstInstance {
+	for i, v := range instances {
+		if v != firstInstance {
 			t.Errorf("Expected singleton instances to be identical, but index %d differed", i)
 		}
 	}
