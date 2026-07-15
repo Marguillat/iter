@@ -40,7 +40,7 @@ func main() {
 				log.Printf("Error while connecting to db: %e", err)
 				return c.Status(503).JSON(utils.InternalServerError)
 			}
-			getPassportResponse, err := database.GetPassportByGTIN(DB.CurrentConn, c.Params("gtin"))
+			getPassportResponse, err := database.GetProductByGTIN(DB.CurrentConn, c.Params("gtin"))
 			if err != nil {
 				log.Printf("Error while requesting passport to db: %e", err)
 				return c.Status(503).JSON(utils.InternalServerError)

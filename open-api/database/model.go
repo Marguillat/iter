@@ -68,7 +68,7 @@ func ConnectToDB() (*DBConnection, error) {
 
 // defer conn.Close(context.Background())
 
-func GetPassportByGTIN(conn *pgx.Conn, gtin string) ([]Product, error) {
+func GetProductByGTIN(conn *pgx.Conn, gtin string) ([]Product, error) {
 	passed, err := utils.CheckIsGTIN(&gtin)
 	if err != nil {
 		return nil, fmt.Errorf("Check GTIN format error: %v\n", err)
