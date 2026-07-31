@@ -18,7 +18,7 @@ services:
     build: ./open-api
     container_name: open_dpp_api
     environment:
-      ITER_DATABASE_URL: postgresql://user-iter-open:psswd-iter-open@open_dpp_db:5432/db-iter-open
+      ITER_DATABASE_URL: postgresql://iter-user:iter-password@open-dpp-db-slave:5432/db-iter-open
 
     ports:
       - 80:7000
@@ -26,28 +26,58 @@ services:
       - internal_network
       - public_network
     depends_on:
-      open-dpp-db:
+      open-dpp-db-slave:
         condition: service_healthy
 
-  open-dpp-db:
-    image: postgres:18
+  open-dpp-db-main:
+    image: bitnami/postgresql:latest
     restart: unless-stopped
-    container_name: open_dpp_db
+    container_name: open_dpp_db_main
     environment:
-      POSTGRES_USER: user-iter-open
-      POSTGRES_PASSWORD: psswd-iter-open
-      POSTGRES_DB: db-iter-open
-      DB_ENV: dev
+      POSTGRESQL_PGAUDIT_LOG: READ,WRITE
+      POSTGRESQL_LOG_HOSTNAME: true
+      POSTGRESQL_REPLICATION_MODE: master
+      POSTGRESQL_REPLICATION_USER: repl_user
+      POSTGRESQL_REPLICATION_PASSWORD: repl_password
+      POSTGRESQL_USERNAME: iter-user
+      POSTGRESQL_PASSWORD: iter-password
+      POSTGRESQL_DATABASE: db-iter-open
+
     networks:
       - internal_network
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
-      - open_dpp_pg:/var/lib/postgresql
+      - open_dpp_pg:/bitnami/postgresql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U user-iter-open -d db-iter-open']
+      test: ['CMD-SHELL', 'pg_isready -U iter-user -d db-iter-open']
       interval: 5s
       timeout: 5s
       retries: 5
+
+  open-dpp-db-slave:
+    image: bitnami/postgresql:latest
+    restart: unless-stopped
+    container_name: open_dpp_db_slave
+    environment:
+      POSTGRESQL_USERNAME: iter-user
+      POSTGRESQL_PASSWORD: iter-password
+      POSTGRESQL_MASTER_HOST: open-dpp-db-main
+      POSTGRESQL_PGAUDIT_LOG: READ,WRITE
+      POSTGRESQL_LOG_HOSTNAME: true
+      POSTGRESQL_REPLICATION_MODE: slave
+      POSTGRESQL_REPLICATION_USER: repl_user
+      POSTGRESQL_REPLICATION_PASSWORD: repl_password
+      POSTGRESQL_MASTER_PORT_NUMBER: 5432
+    networks:
+      - internal_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U iter-user -d db-iter-open']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      open-dpp-db-main:
+        condition: service_healthy
 
   adminer:
     image: adminer
@@ -57,7 +87,6 @@ services:
     networks:
       - internal_network
 
-# Compose networks
 networks:
   internal_network:
     driver: bridge

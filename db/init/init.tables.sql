@@ -8,10 +8,19 @@ WHERE NOT EXISTS (
   SELECT 1 FROM pg_database WHERE datname = 'db-iter-open'
 )\gexec
 
+-- Create recreation USER
+CREATE USER reading_user WITH PASSWORD 'reading_pass';
+GRANT CONNECT ON DATABASE db-iter-open TO reading_user;
+
 \c db-iter-open
 
 CREATE SCHEMA IF NOT EXISTS dpp;
 SET search_path TO dpp;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA dpp TO reading_user;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA dpp TO reading_user;
+GRANT USAGE ON SCHEMA public TO reading_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA dpp GRANT SELECT ON TABLES TO reading_user;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
