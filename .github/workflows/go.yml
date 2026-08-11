@@ -51,6 +51,11 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '1.26'
+      - uses: 1arp/create-a-file-action@0.4.6
+        with:
+          path: ./open-api/output/tests/
+          isAbsolutePath: false
+          file: 'coverage.out'
       - name: Test coverage open api
         run: cd ./open-api && go test -coverprofile ./output/tests/coverage.out ./...
       - uses: SonarSource/sonarqube-scan-action@v8
