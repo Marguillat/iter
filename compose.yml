@@ -42,7 +42,6 @@ services:
       POSTGRESQL_USERNAME: iter-user
       POSTGRESQL_PASSWORD: iter-password
       POSTGRESQL_DATABASE: db-iter-open
-
     networks:
       - internal_network
     volumes:
