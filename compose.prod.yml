@@ -13,7 +13,7 @@ services:
     image: ghcr.io/marguillat/iter-open-api
     container_name: open_dpp_api
     environment:
-      ITER_DATABASE_URL: postgresql://user-iter-open:psswd-iter-open@open_dpp_db:5432/db-iter-open
+      ITER_DATABASE_URL: postgresql://iter-user:iter-password@open-dpp-db-slave:5432/db-iter-open
     networks:
       - internal_network
       - public_network
