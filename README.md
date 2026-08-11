@@ -13,6 +13,42 @@ docker compose up
 ```
 ## Architecture visée:
 Architecture cloud visée :
+
+```mermaid
+---
+config:
+  theme: neutral
+  layout: dagre
+  look: classic
+---
+flowchart LR
+    n1["Open-Iter-API"] -- "READ-ONLY" --> n3["SLAVE-DB-PASSPORT"]
+    n2["MAIN-DB-PASSPORT"] -- Replication --> n3
+    n4["Open-Iter-FRONT"] --> n1
+    n5["gateway"] --> n4 & n1 & n7["Business-Iter-FRONT"]
+    n6[" "] --> n5
+    n7 --> n8["Business-Iter-API"]
+    n8 -- READ<br>WRITE --> n9["BUSINESS-DB"] & n2
+
+    n1@{ shape: rounded}
+    n3@{ shape: db}
+    n2@{ shape: db}
+    n4@{ shape: rounded}
+    n5@{ shape: diam}
+    n7@{ shape: rounded}
+    n6@{ icon: "aws:res-amazon-sagemaker-geospatial-ml", pos: "b"}
+    n8@{ shape: rounded}
+    n9@{ shape: db}
+     n3:::Postgre
+     n2:::Postgre
+     n5:::Peach
+     n9:::Postgre
+    classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
+    classDef Postgre stroke:#002FB0, fill:#BBDEFB, color:#002FB0
+    style n2 fill:#BBDEFB,stroke:#002fb0,color:#002fb0
+    style n6 stroke:#000000
+```
+
 ![architecture cloud](assets/DPP-architecture.png)
 ### Implémentation
 - [/] Base de donnée
