@@ -17,24 +17,24 @@ func TestCheckIsGTIN(t *testing.T) {
 	)
 
 	// Fail
-	if v, _ := CheckIsGTIN(&tooLongGTIN); v {
+	if v := CheckIsGTIN(&tooLongGTIN); v {
 		t.Error("Expected fail on LONG GTIN got pass")
 	}
-	if v, _ := CheckIsGTIN(&tooShortGTIN); v {
+	if v := CheckIsGTIN(&tooShortGTIN); v {
 		t.Error("Expected fail on SHORT GTIN got pass")
 	}
-	if v, _ := CheckIsGTIN(&lettersGTIN); v {
+	if v := CheckIsGTIN(&lettersGTIN); v {
 		t.Error("Expected fail on LETTERS GTIN got pass")
 	}
-	if v, _ := CheckIsGTIN(&symbolGTIN); v {
+	if v := CheckIsGTIN(&symbolGTIN); v {
 		t.Error("Expected fail on SYMBOL GTIN got pass")
 	}
 
 	// win
-	if v, _ := CheckIsGTIN(&validLongGTIN); false == v {
+	if v := CheckIsGTIN(&validLongGTIN); false == v {
 		t.Error("Expected pass on GTIN 14 got fail")
 	}
-	if v, _ := CheckIsGTIN(&validShortGTIN); false == v {
+	if v := CheckIsGTIN(&validShortGTIN); false == v {
 		t.Error("Expected pass on GTIN 8 got fail")
 	}
 

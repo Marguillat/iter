@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/gofiber/fiber/v3"
@@ -27,11 +26,8 @@ var InternalServerError fiber.Map = fiber.Map{
 }
 
 // ---- Functions ----
-func CheckIsGTIN(s *string) (bool, error) {
+func CheckIsGTIN(s *string) bool {
 	const gtinRegexp string = "^[0-9]{8,14}$"
-	match, err := regexp.Match(gtinRegexp, []byte(*s))
-	if err != nil {
-		return false, fmt.Errorf("Fail matching regexp: %e\n", err)
-	}
-	return match, nil
+	match, _ := regexp.Match(gtinRegexp, []byte(*s))
+	return match
 }
