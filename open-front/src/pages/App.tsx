@@ -1,7 +1,22 @@
 import { Button } from "@/components/ui/button"
+import { getApiHealth } from "@/services/api"
+import { useEffect, useState } from "react"
 import { NavLink } from "react-router"
 
 export function App() {
+  const [apiAvailable, setApiAvailable] = useState(false)
+  useEffect(() => {
+    async function checkApiAvailable() {
+      try {
+        const response = await getApiHealth()
+        if (response === "OK") setApiAvailable(true)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    checkApiAvailable()
+  }, [])
+
   return (
     <div className="flex min-h-svh p-6">
       <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
@@ -19,6 +34,7 @@ export function App() {
             Lien vers passport
           </NavLink>
         </nav>
+        API : {apiAvailable ? "OK" : "KO"}
       </div>
     </div>
   )
