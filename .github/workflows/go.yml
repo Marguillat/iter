@@ -16,18 +16,8 @@ env:
 
 jobs:
   security:
-    name: Snyk Scan api
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-      - name: Run Security Checks
-        uses: snyk/actions/golang@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --file=open-api/go.mod
+    uses: $/.github/workflows/security.yml
+    secrets: inherit
 
   tests:
     runs-on: ubuntu-latest
