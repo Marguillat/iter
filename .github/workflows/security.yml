@@ -23,6 +23,7 @@ jobs:
 
   security-FRONT:
     name: Snyk Scan FRONT
+    needs: [security-API]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

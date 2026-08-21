@@ -16,7 +16,7 @@ env:
 
 jobs:
   security:
-    uses: marguillat/iter/.github/workflows/security.yml@main
+    uses: ./.github/workflows/security.yml
     secrets: inherit
 
   tests:
