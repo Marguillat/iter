@@ -30,7 +30,7 @@ jobs:
     name: Deploy to Production
     environment: Production
     runs-on: ubuntu-latest
-    needs: [build-and-push]
+    needs: [open-FRONT, open-API]
     permissions:
       contents: read
       packages: read
