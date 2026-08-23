@@ -13,8 +13,6 @@ on:
         required: true
       SONAR_HOST_URL:
         required: true
-      GITHUB_TOKEN:
-        required: true
 
 env:
   registry: ghcr.io
