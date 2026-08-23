@@ -2,6 +2,10 @@ name: Workflow Iter
 
 on:
   workflow_call:
+    inputs:
+      GH_TOKEN:
+        required: true
+        type: string
     secrets:
       SNYK_TOKEN:
         required: true
@@ -87,7 +91,7 @@ jobs:
         with:
           registry: ${{ env.registry }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ inputs.GH_TOKEN }}
 
       - name: PrepareReg Names # Pour virer les majuscule de con
         run: |
