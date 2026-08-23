@@ -1,10 +1,8 @@
 services:
+  # Backend #
   swagger-ui:
     image: docker.swagger.io/swaggerapi/swagger-ui:latest
     container_name: iter_swagger_ui
-    # depends_on:
-    #   open-dpp-api:
-    #     condition: service_healthy
     environment:
       SWAGGER_JSON: /swagger-ui/specification.yml
     ports:
@@ -86,6 +84,20 @@ services:
     networks:
       - internal_network
 
+  # Frontend #
+  open-dpp-front:
+    build:
+      context: ./open-front
+      args:
+        VITE_OPEN_API_URL: http://localhost:80
+    container_name: open_dpp_front
+    ports:
+      - 8080:80
+    networks:
+      - public_network
+    depends_on:
+      open-dpp-api:
+        condition: service_started
 networks:
   internal_network:
     driver: bridge
