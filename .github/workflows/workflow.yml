@@ -20,6 +20,9 @@ jobs:
     secrets: inherit
     with:
       GH_TOKEN: ${{ github.token }}
+    permissions:
+      contents: read
+      packages: write
 
   open-FRONT:
     uses: ./.github/workflows/open-FRONT.yml
