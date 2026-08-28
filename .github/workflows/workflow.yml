@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/open-API.yml
     secrets: inherit
     with:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
 
   open-FRONT:
     uses: ./.github/workflows/open-FRONT.yml
