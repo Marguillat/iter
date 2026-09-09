@@ -27,6 +27,7 @@ services:
       open-dpp-db-slave:
         condition: service_healthy
 
+  # BDD main #
   open-dpp-db-main:
     image: bitnami/postgresql:latest
     restart: unless-stopped
@@ -51,6 +52,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # BDD escalve #
   open-dpp-db-slave:
     image: bitnami/postgresql:latest
     restart: unless-stopped
@@ -76,6 +78,7 @@ services:
       open-dpp-db-main:
         condition: service_healthy
 
+  # Voir la BDD #
   adminer:
     image: adminer
     restart: always
