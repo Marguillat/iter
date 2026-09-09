@@ -128,3 +128,13 @@
     @apply font-sans;
     }
 }
+/* Palette ITER, relevee sur la maquette du recapitulatif produit. */
+@theme {
+    --color-iter-rose: #f7e8e3;
+    --color-iter-orange: #d4603c;
+    --color-iter-purple: #b15fa5;
+    --color-iter-ink: #1c1c1c;
+    --color-iter-slate: #8f8f8f;
+    --color-iter-rule: #d8d8d8;
+    --color-iter-placeholder: #d9d9d9;
+}

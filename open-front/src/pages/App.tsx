@@ -29,9 +29,12 @@ export function App() {
         <div className="font-mono text-xs text-muted-foreground">
           (Press <kbd>d</kbd> to toggle dark mode)
         </div>
-        <nav>
+        <nav className="flex flex-col gap-1">
           <NavLink className="hover:underline" to="/test" end>
             Lien vers passport
+          </NavLink>
+          <NavLink className="hover:underline" to="/business">
+            Front métier (catalogue &amp; passeports)
           </NavLink>
         </nav>
         API : {apiAvailable ? "OK" : "KO"}
