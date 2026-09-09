@@ -53,6 +53,39 @@ func main() {
 		}
 	})
 
+	// --- Routes metier (Business-Iter-FRONT) ---
+	// Toutes ces lectures passent par open-dpp-db-slave (cf. ITER_DATABASE_URL).
+	app.Get("/api/business/products", func(c fiber.Ctx) error {
+		DB, err := database.ConnectToDB()
+		if err != nil {
+			log.Printf("Error while connecting to db: %v", err)
+			return c.Status(503).JSON(utils.InternalServerError)
+		}
+		products, err := database.ListProducts(DB.CurrentConn)
+		if err != nil {
+			log.Printf("Error while listing products: %v", err)
+			return c.Status(503).JSON(utils.InternalServerError)
+		}
+		return c.JSON(products)
+	})
+
+	app.Get("/api/business/passport/:gtin", func(c fiber.Ctx) error {
+		DB, err := database.ConnectToDB()
+		if err != nil {
+			log.Printf("Error while connecting to db: %v", err)
+			return c.Status(503).JSON(utils.InternalServerError)
+		}
+		passport, err := database.GetFullPassportByGTIN(DB.CurrentConn, c.Params("gtin"))
+		if err == database.ErrPassportNotFound {
+			return c.Status(404).JSON(utils.NoRouteMessage)
+		}
+		if err != nil {
+			log.Printf("Error while requesting passport to db: %v", err)
+			return c.Status(503).JSON(utils.InternalServerError)
+		}
+		return c.Type("json").Send(passport)
+	})
+
 	// Démarrer le serveur sur le port 7000
 	port := 7000
 	log.Printf("Starting server on port %d...", port)
