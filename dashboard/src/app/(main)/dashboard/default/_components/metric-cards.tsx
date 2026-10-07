@@ -1,75 +1,98 @@
-import { DollarSign, TrendingDown, TrendingUp, UserPlus, Users, Waves } from "lucide-react";
+import {
+  DollarSign,
+  TrendingDown,
+  TrendingUp,
+  UserPlus,
+  Users,
+  Waves,
+} from 'lucide-react'
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 export function MetricCards() {
   return (
-    <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+    <div className='grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs xl:grid-cols-3 dark:*:data-[slot=card]:bg-card'>
       <Card>
         <CardHeader>
           <CardTitle>
-            <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
-              <DollarSign className="size-4" />
+            <div className='flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground'>
+              <DollarSign className='size-4' />
             </div>
           </CardTitle>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>DPP publiés</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">$1,250.00</div>
+        <CardContent className='flex flex-col gap-1'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <div className='font-medium text-3xl tabular-nums leading-none tracking-tight'>
+              47
+            </div>
             <Badge>
-              <TrendingUp className="size-3" />
+              <TrendingUp className='size-3' />
               +12.5%
             </Badge>
           </div>
-          <p className="text-muted-foreground text-sm">Visitors for the last 6 months</p>
+          <p className='text-muted-foreground text-sm'>
+            Progression sur les 6 derniers mois
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
           <CardTitle>
-            <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
-              <UserPlus className="size-4" />
+            <div className='flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground'>
+              <UserPlus className='size-4' />
             </div>
           </CardTitle>
-          <CardDescription>New Customers</CardDescription>
+          <CardDescription>DPP complets sur total</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">1,234</div>
-            <Badge variant="destructive">
-              <TrendingDown className="size-3" />
+        <CardContent className='flex flex-col gap-1'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <div className='font-medium text-3xl tabular-nums leading-none tracking-tight'>
+              87
+              <span>%</span>
+            </div>
+            {/*<Badge variant='destructive'>
+              <TrendingDown className='size-3' />
               -20%
-            </Badge>
+            </Badge>*/}
           </div>
-          <p className="text-muted-foreground text-sm">Acquisition needs attention</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
           <CardTitle>
-            <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
-              <Users className="size-4" />
+            <div className='flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground'>
+              <Users className='size-4' />
             </div>
           </CardTitle>
-          <CardDescription>Active Accounts</CardDescription>
+          <CardDescription>DPP consultés sur le dernier mois</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">45,678</div>
-            <Badge>
-              <TrendingUp className="size-3" />
+        <CardContent className='flex flex-col gap-1'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <div className='font-medium text-3xl tabular-nums leading-none tracking-tight'>
+              45,678
+            </div>
+            <Badge variant='destructive'>
+              <TrendingDown className='size-3' />
               +12.5%
             </Badge>
           </div>
-          <p className="text-muted-foreground text-sm">Engagement exceeds targets</p>
+          {/*<p className='text-muted-foreground text-sm'>
+            Engagement exceeds targets
+          </p>*/}
         </CardContent>
       </Card>
 
-      <Card>
+      {/*<Card>
         <CardHeader>
           <CardTitle>
             <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
@@ -88,7 +111,7 @@ export function MetricCards() {
           </div>
           <p className="text-muted-foreground text-sm">Meets growth projections</p>
         </CardContent>
-      </Card>
+      </Card>*/}
     </div>
-  );
+  )
 }
