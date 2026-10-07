@@ -32,7 +32,7 @@ export default function Products() {
       </p>
 
       {error && (
-        <p className="mt-8 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="mt-8 rounded-md border border-iter-ink bg-iter-rose px-4 py-3 text-sm text-iter-ink">
           Impossible de charger le catalogue : {error}
         </p>
       )}
