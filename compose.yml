@@ -34,7 +34,6 @@ services:
     container_name: open_dpp_db_main
     environment:
       POSTGRESQL_PGAUDIT_LOG: READ,WRITE
-      POSTGRESQL_LOG_HOSTNAME: true
       POSTGRESQL_REPLICATION_MODE: master
       POSTGRESQL_REPLICATION_USER: repl_user
       POSTGRESQL_REPLICATION_PASSWORD: repl_password
@@ -48,9 +47,10 @@ services:
       - open_dpp_pg:/bitnami/postgresql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U iter-user -d db-iter-open']
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
 
   # BDD escalve #
   open-dpp-db-slave:
@@ -62,7 +62,6 @@ services:
       POSTGRESQL_PASSWORD: iter-password
       POSTGRESQL_MASTER_HOST: open-dpp-db-main
       POSTGRESQL_PGAUDIT_LOG: READ,WRITE
-      POSTGRESQL_LOG_HOSTNAME: true
       POSTGRESQL_REPLICATION_MODE: slave
       POSTGRESQL_REPLICATION_USER: repl_user
       POSTGRESQL_REPLICATION_PASSWORD: repl_password
@@ -71,9 +70,10 @@ services:
       - internal_network
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U iter-user -d db-iter-open']
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
     depends_on:
       open-dpp-db-main:
         condition: service_healthy
