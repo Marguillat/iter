@@ -5,6 +5,7 @@ import (
 	"iter-api/database"
 	"iter-api/utils"
 	"log"
+	"time"
 
 	"github.com/gofiber/contrib/v3/monitor"
 	"github.com/gofiber/fiber/v3"
@@ -85,6 +86,18 @@ func main() {
 		}
 		return c.Type("json").Send(passport)
 	})
+
+	// Ouvre le pool des le demarrage pour que la premiere requete ne paie pas
+	// la connexion. Si la base n'est pas encore prete, les handlers
+	// retenteront via ConnectToDB().
+	for attempt := 1; attempt <= 10; attempt++ {
+		if _, err := database.ConnectToDB(); err == nil {
+			break
+		} else {
+			log.Printf("Database not ready (attempt %d/10): %v", attempt, err)
+		}
+		time.Sleep(time.Second)
+	}
 
 	// Démarrer le serveur sur le port 7000
 	port := 7000

@@ -6,6 +6,7 @@ import (
 	"iter-api/utils"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // ProductSummary est la vue liste utilisee par le front metier.
@@ -31,7 +32,7 @@ LEFT JOIN dpp.lifecycle_current_state lcs ON lcs.passport_id = p.passport_id
 ORDER BY p.brand, p.name`
 
 // ListProducts renvoie tous les produits du catalogue en lecture seule.
-func ListProducts(conn *pgx.Conn) ([]ProductSummary, error) {
+func ListProducts(conn *pgxpool.Pool) ([]ProductSummary, error) {
 	rows, err := conn.Query(context.Background(), listProductsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
@@ -148,7 +149,7 @@ var ErrPassportNotFound = fmt.Errorf("passport not found")
 
 // GetFullPassportByGTIN agrege le passeport complet cote base et renvoie le
 // JSON deja serialise par PostgreSQL.
-func GetFullPassportByGTIN(conn *pgx.Conn, gtin string) ([]byte, error) {
+func GetFullPassportByGTIN(conn *pgxpool.Pool, gtin string) ([]byte, error) {
 	if !utils.CheckIsGTIN(&gtin) {
 		return nil, fmt.Errorf("GTIN is not in the correct format")
 	}

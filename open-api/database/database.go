@@ -6,15 +6,19 @@ import (
 	"iter-api/utils"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var lock = &sync.Mutex{}
 
 type DBConnection struct {
 	connectionString string
-	CurrentConn      *pgx.Conn
+	// Pool plutot qu'une pgx.Conn unique : une pgx.Conn ne supporte pas les
+	// requetes concurrentes et ne se reconnecte pas si elle tombe.
+	CurrentConn *pgxpool.Pool
 }
 
 var DB *DBConnection = nil
@@ -29,8 +33,16 @@ func ConnectToDB() (*DBConnection, error) {
 			connectionString := os.Getenv("ITER_DATABASE_URL")
 
 			// 1. Connect using a local variable first
-			conn, err := pgx.Connect(context.Background(), connectionString)
+			conn, err := pgxpool.New(context.Background(), connectionString)
 			if err != nil {
+				return nil, fmt.Errorf("unable to connect to database: %w", err)
+			}
+
+			// pgxpool.New est paresseux : on verifie que la base repond vraiment.
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := conn.Ping(ctx); err != nil {
+				conn.Close()
 				return nil, fmt.Errorf("unable to connect to database: %w", err)
 			}
 
@@ -46,7 +58,7 @@ func ConnectToDB() (*DBConnection, error) {
 
 // defer conn.Close(context.Background())
 
-func GetProductByGTIN(conn *pgx.Conn, gtin string) ([]DigitalProductPassport, error) {
+func GetProductByGTIN(conn *pgxpool.Pool, gtin string) ([]DigitalProductPassport, error) {
 	passed := utils.CheckIsGTIN(&gtin)
 	if !passed {
 		return nil, fmt.Errorf("GTIN is not in the correct format")
@@ -286,6 +298,9 @@ func GetProductByGTIN(conn *pgx.Conn, gtin string) ([]DigitalProductPassport, er
 		context.Background(),
 		formatedQuery,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByName[DigitalProductPassport])
 	if err != nil {
 		return nil, fmt.Errorf("QueryRow failed: %v\n", err)
