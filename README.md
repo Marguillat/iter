@@ -6,8 +6,10 @@ Dans sa version brut il permet d'accéder aux passe-port produit d'articles où 
 ### Local
 Le lancement de l'application se fait en local avec docker:
 ```bash
-git clone git@github.com:Marguillat/iter-open-api.git
-cd iter-open-api
+git clone git@github.com:Marguillat/iter.git
+cd iter
+# le reseau public_network est declare external dans compose.yml
+docker network create public_network
 # utilise le compose.yml
 docker compose up
 ```
